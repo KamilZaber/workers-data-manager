@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MyFunctions {
+public class ProgramFunctions {
+    public static void displayMenu() {
+        System.out.println("Workers Database Manager 1.0\n\nMenu:\n1. Load database. \n2. Create new database.");
+    }
+
     public static <T> List<T> convertArrayToList(T array[])
     {
         List<T> list = new ArrayList<T>();
@@ -17,48 +21,34 @@ public class MyFunctions {
         return list;
     }
 
-    public static void displayList(List<Worker> list) {
-        for(Worker w: list) {
-            w.displayData();
-        }
-    }
     public static void displayMap(HashMap<String,Float> map) {
         for(String s: map.keySet()) {
             System.out.print(s + " = " + map.get(s) + "\n");
         }
     }
 
-    public static List<Worker> readWorkersData(String fileName) {
-        List<Worker> workersData = null;
+    public static WorkersDatabase readWorkersData(String fileName) {
+        WorkersDatabase database;
         Gson gson = new Gson();
         try {
-            workersData = convertArrayToList(gson.fromJson(new String(Files.readAllBytes(Paths.get(fileName))),Worker[].class));
+            database = new WorkersDatabase(fileName, convertArrayToList(gson.fromJson(new String(Files.readAllBytes(Paths.get(fileName))),Worker[].class)));
         }catch(IOException e) {
-            System.out.println("Problem with reading a file occured. Trying to create new datafile.");
-            try{
-                FileWriter writer = new FileWriter(fileName);
-                if(writer != null) {
-                    System.out.println("Created new datafile.");
-                    writer.close();
-                    System.exit(0);
-                }
-            }catch(IOException e2) {
-                System.out.println("Problem with creating new datafile occured.");
-                System.exit(0);
-            }
+            System.out.println("Problem with reading the file occured.");
+            database = null;
         }
-        return workersData;
+        return database;
     }
 
-    public static void writeWorkersData(List<Worker> workersData) {
+    public static void writeWorkersData(String fileName, WorkersDatabase database) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        FileWriter writer = null;
+        FileWriter writer;
         try {
-            writer = new FileWriter("workers_data.json");
-            writer.write(gson.toJson(workersData));
+            writer = new FileWriter(fileName);
+            writer.write(gson.toJson(database.getData()));
             writer.close();
         }catch(IOException e){
-            System.out.println("Problem with creating the file occured.");
+            System.out.println("Problem with creating the file occured. Exiting the program.");
+            System.exit(0);
         }
     }
 }

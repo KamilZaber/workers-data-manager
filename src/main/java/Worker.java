@@ -14,6 +14,6 @@ public class Worker {
     }
 
     public void displayData() {
-        System.out.print(ID + " " + name + " " + surname + " " + job + " " + salary + "\n");
+        System.out.print(ID + ". " + name + " " + surname + "; " + job + "; " + salary + "\n");
     }
 }
